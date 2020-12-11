@@ -1,4 +1,4 @@
-package sample;
+package com.company;
 
 import com.company.classes.*;
 import javafx.beans.value.ChangeListener;
