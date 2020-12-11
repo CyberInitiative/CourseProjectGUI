@@ -22,7 +22,7 @@ public class Process{
     private int resourceId = -1;
     private Timer timer = new Timer();
     //private int maxInitAttempts = 3;
-    
+
     public Process(int id) {
         this.id = id;
         this.memory = Utils.getRandomInteger(10,Configuration.memoryVolume/4);  //кол-во памяти, требуемое для процесса
