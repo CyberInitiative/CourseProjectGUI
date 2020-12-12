@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -58,7 +59,8 @@ public class Controller {
     private TextField totalWaitingDataField;
     @FXML
     private TextField totalTerminatedDataField;
-
+    @FXML
+    private TextField delayInfo;
     @FXML
     private TextField memoryUtilization;
     @FXML
@@ -155,6 +157,7 @@ public class Controller {
 
                 memoryUtilization.setText(String.valueOf(scheduler.getMemoryUtil() + "%"));
                 cpuUtilization.setText(String.valueOf(scheduler.getCpuUtil() + "%"));
+                //delayInfo.setText();
 
             }
         };
@@ -186,12 +189,16 @@ public class Controller {
 
     @FXML
     private void addNumberOfProcessesInRandomTimeButton() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Random process");
         int procNumber = Utils.getRandomInteger(1, 1);
         int delay = 0;
         for (int i = 0; i < procNumber; i++) {
-            delay = Utils.getRandomInteger(10000, 20000);
+            delay = Utils.getRandomInteger(10000, 50000);
             scheduler.addProcessRandom(delay);
         }
+        alert.setContentText("Процесс появится через " + String.valueOf(delay) + "мс");
+        alert.showAndWait();
     }
 
     @FXML

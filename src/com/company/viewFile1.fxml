@@ -20,10 +20,10 @@
          </columns>
       </TableView>
       <Button layoutX="855.0" layoutY="43.0" mnemonicParsing="false" onAction="#addNumberOfProcessesButton" prefHeight="25.0" prefWidth="74.0" style="-fx-background-color: #98FB98;" text="Добавить" />
-      <Button layoutX="855.0" layoutY="206.0" mnemonicParsing="false" onAction="#killProcess" prefHeight="18.0" prefWidth="74.0" style="-fx-background-color: #FF0000;" text="Kill " />
+      <Button layoutX="855.0" layoutY="213.0" mnemonicParsing="false" onAction="#killProcess" prefHeight="18.0" prefWidth="74.0" style="-fx-background-color: #FF0000;" text="Kill " />
       <Button layoutX="855.0" layoutY="132.0" mnemonicParsing="false" onAction="#addNumberOfProcessesInRandomTimeButton" prefHeight="25.0" prefWidth="74.0" style="-fx-background-color: #1E90FF;" text="Создать" textAlignment="CENTER" />
       <TextField fx:id="textFieldAddProcesses" layoutX="945.0" layoutY="43.0" prefHeight="25.0" prefWidth="74.0" />
-      <TextField fx:id="textFieldKillProcess" layoutX="945.0" layoutY="206.0" prefHeight="26.0" prefWidth="74.0" />
+      <TextField fx:id="textFieldKillProcess" layoutX="945.0" layoutY="213.0" prefHeight="26.0" prefWidth="74.0" />
       <Label layoutX="855.0" layoutY="93.0" prefHeight="26.0" prefWidth="223.0" text="Запустить случайный процесс&#10;&#10;&#10;" textAlignment="CENTER">
          <font>
             <Font name="Consolas" size="12.0" />
@@ -41,8 +41,8 @@
       </TableView>
       <Accordion layoutX="664.0" layoutY="82.0" />
       <Separator layoutX="822.0" layoutY="81.0" prefHeight="3.0" prefWidth="261.0" />
-      <Separator layoutX="822.0" layoutY="171.0" prefHeight="3.0" prefWidth="261.0" />
-      <Separator layoutX="822.0" layoutY="254.0" prefHeight="3.0" prefWidth="261.0" />
+      <Separator layoutX="822.0" layoutY="168.0" prefHeight="3.0" prefWidth="261.0" />
+      <Separator layoutX="822.0" layoutY="230.0" prefHeight="50.0" prefWidth="261.0" />
       <Label layoutX="283.0" layoutY="286.0" prefHeight="17.0" prefWidth="238.0" style="-fx-background-color: #ffffff;" text="Кол-во процесов ушедших в отказ:">
          <font>
             <Font name="Consolas" size="12.0" />
