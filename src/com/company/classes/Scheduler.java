@@ -40,20 +40,6 @@ public class Scheduler {
 
         jobsQueue.sortByPriorityAndArrivalTime(State.Ready);
     }
-
-    /*
-    public void addProcessManual(int number){
-        jobsQueue.addManual(number);
-        for (int i = 0; i < jobsQueue.getSize(); i++) {
-            var process = jobsQueue.get(i);
-            if(process.getState() == State.New)
-                initProcess(process);
-        }
-
-        jobsQueue.sortByPriorityAndArrivalTime(State.Ready);
-    }
-     */
-
     public void add(Process process) {
         jobsQueue.add(process);
     }
@@ -94,17 +80,6 @@ public class Scheduler {
     public void schedule() {
 
         do {
-            /*
-            for (Core core : cpu.getCores()) {
-                if (core.isIdle() && readyQueue.getSize() > 0) {
-                    var process = readyQueue.get(0);
-                    process.setState(State.Running);
-                    //if(processQueue.getSize() > 0) {
-                    core.setIdle(false);
-                    process.setCore(core);
-                }
-            }
-            */
             for (int i = 0; i < readyQueue.getSize(); i++) {
                 var process = readyQueue.get(i);
 
@@ -163,14 +138,8 @@ public class Scheduler {
             for (int i = 0; i < jobsQueue.getSize(); i++) {
                 var process = jobsQueue.get(i);
                 if (process.getState() == State.New) {
-                    //if(process.getMaxInitAttempts() > 0) {
                     initProcess(process);
                     readyQueue.sortByPriorityAndArrivalTime(State.Ready);
-                    //}
-                    //else {
-                    //    rejectedQueue.add(process);
-                    //    jobsQueue.remove(process);
-                    //}
                 }
             }
 
@@ -194,34 +163,6 @@ public class Scheduler {
     }
 
     public int getCpuUtil(){
-        /*
-        float cpuUtil = 0;
-        for(int i = 0; i < readyQueue.getSize(); i++){
-            cpuUtil += readyQueue.get(i).getCpuUtil();
-        }
-
-        for(int i = 0; i < waitingQueue.getSize(); i++){
-            cpuUtil += waitingQueue.get(i).getCpuUtil();
-        }
-
-        int cpuCount = cpu.getCores().length;
-        int activeCpuCount = 0;
-        for(int i = 0; i < cpuCount; i++){
-            if(cpu.getCore(i).isIdle() == false)
-                activeCpuCount++;
-        }
-
-        float cpuCoeff = (float)activeCpuCount / cpuCount;
-
-        int queueSize = readyQueue.getSize() + waitingQueue.getSize();
-
-        if(queueSize != 0) {
-            cpuUtil = cpuUtil / (float)queueSize * cpuCoeff;
-        }
-
-        return (int)(cpuUtil * 100);
-        */
-
         int busyTime = 0;
         int idleTime = 0;
 
@@ -278,16 +219,6 @@ public class Scheduler {
             jobsQueue.remove(process);
         }
     }
-
-    /*
-        public int countRejected(){
-            int counter = 0;
-            for(int i = 0; i < rejectedQueue.getSize(); i++){
-                counter++;
-            }
-            return counter;
-        }
-    */
 
     public Queue getJobsQueue() {
         return jobsQueue;

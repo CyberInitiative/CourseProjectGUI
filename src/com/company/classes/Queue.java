@@ -2,7 +2,6 @@ package com.company.classes;
 
 import java.util.*;
 
-//Общая очередь всех процессов. Все новые процессы попадают сюда.
 public class Queue {
     private ArrayList<Process> queue;
     private int lastID;
@@ -32,26 +31,9 @@ public class Queue {
 
     public void add(final int N) {
         for (int i = 0; i < N; i++) {
-            /*
-            try {
-                Thread.sleep(Utils.getRandomInteger(500, 3000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            */
             this.add();
         }
     }
-
-    /*
-    public void countReadyAndRunningProcesses(){
-       for(int i = 0; i < queue.size(); i++){
-           if(queue.get(i).getState() == State.Ready || queue.get(i).getState() == State.Running){
-               counterReadyAndRunningProcesses++;
-           }
-       }
-    }
-     */
 
     public void remove(int i){
         this.queue.remove(i);
@@ -109,15 +91,6 @@ public class Queue {
             }
         }
     }
-/*
-    public int dataCounter(Queue queue){
-        int counter = 0;
-        for(int i = 0; i < queue.getSize(); i++){
-            counter++;
-        }
-        return counter;
-    }
- */
 
     public int getLastID() {
         return lastID;

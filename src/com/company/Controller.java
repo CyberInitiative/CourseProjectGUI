@@ -18,8 +18,6 @@ import java.util.TimerTask;
 public class Controller {
     @FXML
     private TableView<Process> tableView;
-    //@FXML
-    //private TableColumn<Process, Integer> processIdCol;
     @FXML
     private TableColumn<Process, Integer> processPriorityCol;
     @FXML
@@ -65,11 +63,6 @@ public class Controller {
     private TextField memoryUtilization;
     @FXML
     private TextField cpuUtilization;
-
-    //@FXML
-    //private TableView<Queue> dataTableView;
-    //@FXML
-    //private TableColumn<Queue,Integer> readyAndRunningCol;
 
     private Main main;
 
@@ -152,9 +145,6 @@ public class Controller {
                 int rejectedCount = scheduler.getRejectedQueue().getSize();
                 rejectedData.setText(String.valueOf(rejectedCount));
 
-                int readyCount = scheduler.getReadyQueue().getCountByState(State.Ready);
-                int runningCount = scheduler.getReadyQueue().getCountByState(State.Running);
-                readyCount += runningCount;
                 //totalWaitingDataField.setText(String.valueOf(totalReady));
 
                 int waitingCount = scheduler.getWaitingQueue().getCountByState(State.Waiting);
@@ -170,18 +160,6 @@ public class Controller {
         };
         timer.schedule(timerTask, 1000, 1000);
     }
-
-    /*
-    @FXML
-    private void setLabel(){
-        int counter = 0;
-        for (int i = 0; i < scheduler.getReadyQueue().getSize(); i++) {
-
-        }
-        String rejectedDataString = String.valueOf(scheduler.getRejectedQueue().getSize());
-        rejectedData.setText(rejectedDataString);
-    }
-     */
 
     @FXML
     private void addNumberOfProcessesButton() {
@@ -201,12 +179,6 @@ public class Controller {
             } else {
                 textFieldAddProcesses.setStyle("-fx-control-inner-background: #ff3d3b");
             }
-            /*
-            for(int i = 0; i < scheduler.getJobsQueue().getSize(); i++){
-                processObservableList.add(scheduler.getJobsQueue().get(i));
-                tableView.setItems(processObservableList);
-            }
-            */
         } catch (NumberFormatException exception) {
             textFieldAddProcesses.clear();
         }
@@ -248,7 +220,6 @@ public class Controller {
                 textFieldKillProcess.setStyle("-fx-control-inner-background: #ffffff");
             } else {
                 textFieldKillProcess.clear();
-                //textFieldKillProcess.setStyle("-fx-control-inner-background: #ff3d3b");
             }
         }
         for (int i = 0; i < scheduler.getReadyQueue().getSize(); i++) {
@@ -258,7 +229,6 @@ public class Controller {
                 textFieldKillProcess.setStyle("-fx-control-inner-background: #ffffff");
             } else {
                 textFieldKillProcess.clear();
-                //textFieldKillProcess.setStyle("-fx-control-inner-background: #ff3d3b");
             }
         }
         for (int i = 0; i < scheduler.getWaitingQueue().getSize(); i++) {
@@ -271,7 +241,6 @@ public class Controller {
                 textFieldKillProcess.setStyle("-fx-control-inner-background: #ffffff");
             } else {
                 textFieldKillProcess.clear();
-                //textFieldKillProcess.setStyle("-fx-control-inner-background: #ff3d3b");
             }
         }
     }
