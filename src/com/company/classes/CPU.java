@@ -4,9 +4,6 @@ public class CPU {
 
     private Core[] cores;
 
-    public CPU() {
-    }
-
     public CPU(final int coresNumber){
         cores = new Core[coresNumber];
         for(int i = 0; i < coresNumber; i++){

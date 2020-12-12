@@ -7,21 +7,13 @@ public class Queue {
     private ArrayList<Process> queue;
     private int lastID;
 
-    public int getLastID() {
-        return lastID;
+    public Queue() {
+        this.queue = new ArrayList<>();
+        this.lastID = 1;
     }
 
     public Process get(int i) {
         return queue.get(i);
-    }
-
-    public void setLastID(int lastID) {
-        this.lastID = lastID;
-    }
-
-    public Queue() {
-        this.queue = new ArrayList<>();
-        this.lastID = 1;
     }
 
     public int getSize() {
@@ -38,14 +30,6 @@ public class Queue {
         this.add(process);
     }
 
-    public void remove(int i){
-        this.queue.remove(i);
-    }
-
-    public void remove(Process process){
-        this.queue.remove(process);
-    }
-
     public void add(final int N) {
         for (int i = 0; i < N; i++) {
             /*
@@ -59,69 +43,33 @@ public class Queue {
         }
     }
 
-    public void addManual(final int N) {
-        Scanner input = new Scanner(System.in);
-        for (int i = 0; i < N; i++) {
-            Process process = new Process();
-            System.out.println("Enter the PID");
-            process.setId(input.nextInt());
-            System.out.println("Set priority");
-            process.setPriority(input.nextInt());
-            System.out.println("Set time");
-            process.setTime(input.nextInt());
-            System.out.println("Set memory");
-            process.setMemory(input.nextInt());
-            this.add(process);
-        }
-    }
-
     /*
-    public void sortByArrivalTime(){
-        Process [] sortedQueue = this.queue.toArray(new Process[0]);
-        for(int i = 0; i < sortedQueue.length - 1; i++){
-            for(int j = 0; j < sortedQueue.length - i - 1; j++){
-                if(sortedQueue[j].getArrivalTime() > sortedQueue[j + 1].getArrivalTime()){
-                    Process temp = sortedQueue[j];
-                    sortedQueue[j] = sortedQueue[j+1];
-                    sortedQueue[j + 1] = temp;
-                }
-            }
-        }
-        this.queue = new ArrayList(Arrays.asList(sortedQueue));
-    }
-    /*
-
-    public void sortByPriority(){
-        Process [] sortedQueue = this.queue.toArray(new Process[0]);
-        sortByArrivalTime();
-        int n = sortedQueue.length;
-
-        int indexOfFirstElement = 0;
-        Process first = sortedQueue[0];
-        for (int i = n -1; i > 0; i--) {
-            if (sortedQueue[i].getArrivalTime() <= first.getArrivalTime() && first.getPriority() >= sortedQueue[i].getPriority()) {
-                first = sortedQueue[i];
-                indexOfFirstElement = i;
-            }
-        }
-        Process temp = sortedQueue[indexOfFirstElement];
-        sortedQueue[indexOfFirstElement] = sortedQueue[0];
-        sortedQueue[0] = temp;
-        this.queue = new ArrayList(Arrays.asList(sortedQueue));
+    public void countReadyAndRunningProcesses(){
+       for(int i = 0; i < queue.size(); i++){
+           if(queue.get(i).getState() == State.Ready || queue.get(i).getState() == State.Running){
+               counterReadyAndRunningProcesses++;
+           }
+       }
     }
      */
+
+    public void remove(int i){
+        this.queue.remove(i);
+    }
+
+    public void remove(Process process){
+        this.queue.remove(process);
+    }
 
     public synchronized void sortByPriorityAndArrivalTime(State state){
         Process[] sortedQueue = this.queue.toArray(new Process[0]);
         int temp;
         String stemp;
-        //Process tempProcess;
         for(int i = 0; i < sortedQueue.length; i++){
             if(sortedQueue[i].getState() != state.Ready)
                 continue;
             for(int j = 0; j <sortedQueue.length - i - 1; j++){
-                //if(sortedQueue[j].getState() == State.Running)
-                //    continue;
+
                 if(sortedQueue[j].getArrivalTime() > sortedQueue[j + 1].getArrivalTime()){
                     temp = sortedQueue[j].getArrivalTime();
                     sortedQueue[j].setArrivalTime(sortedQueue[j+1].getArrivalTime());
@@ -138,10 +86,6 @@ public class Queue {
                     stemp = sortedQueue[j].getName();
                     sortedQueue[j].setName(sortedQueue[j+1].getName());
                     sortedQueue[j + 1].setName(stemp);
-
-                    //tempProcess  = sortedQueue[j];
-                    //sortedQueue[j] = sortedQueue[j+1];
-                    //sortedQueue[j + 1] = tempProcess;
                 }
                 if(sortedQueue[j].getArrivalTime() == sortedQueue[j+1].getArrivalTime()){
                     if(sortedQueue[j].getPriority() > sortedQueue[j+1].getPriority()){
@@ -164,6 +108,40 @@ public class Queue {
                 }
             }
         }
+    }
+/*
+    public int dataCounter(Queue queue){
+        int counter = 0;
+        for(int i = 0; i < queue.getSize(); i++){
+            counter++;
+        }
+        return counter;
+    }
+ */
+
+    public int getLastID() {
+        return lastID;
+    }
+
+    public void setLastID(int lastID) {
+        this.lastID = lastID;
+    }
+
+    public int getCountByState(State state){
+        int count = 0;
+        for(int i = 0 ; i < queue.size(); i++){
+            if(queue.get(i).getState() == state)
+                count++;
+        }
+        return count;
+    }
+
+    public int getUsedMemory(){
+        int usedMemory = 0;
+        for (int i = 0; i < queue.size(); i++){
+            usedMemory += queue.get(i).getMemory();
+        }
+        return usedMemory;
     }
 
     @Override

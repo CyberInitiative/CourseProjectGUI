@@ -24,6 +24,14 @@ public class MemoryScheduler {
     }
      */
 
+    public int getAvailableMemory(){
+        int availableMemory = 0;
+        for(var memoryBlock : memoryBlocks){
+            availableMemory += memoryBlock.getAvailableMemory();
+        }
+        return availableMemory;
+    }
+
     public MemoryBlock fillMemoryBLock(int memorySize) {
         //findFreeBlock(process);
         biggestBlock = Collections.max(memoryBlocks, Comparator.comparing(s -> s.getAvailableMemory()));

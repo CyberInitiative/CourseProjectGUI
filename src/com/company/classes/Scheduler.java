@@ -30,17 +30,18 @@ public class Scheduler {
         tactGenerator = new TactGenerator();
     }
 
-    public void addProcess(int number){
+    public void addProcess(int number) {
         jobsQueue.add(number);
         for (int i = 0; i < jobsQueue.getSize(); i++) {
             var process = jobsQueue.get(i);
-            if(process.getState() == State.New)
+            if (process.getState() == State.New)
                 initProcess(process);
         }
 
         jobsQueue.sortByPriorityAndArrivalTime(State.Ready);
     }
 
+    /*
     public void addProcessManual(int number){
         jobsQueue.addManual(number);
         for (int i = 0; i < jobsQueue.getSize(); i++) {
@@ -51,12 +52,13 @@ public class Scheduler {
 
         jobsQueue.sortByPriorityAndArrivalTime(State.Ready);
     }
+     */
 
-    public void add(Process process){
+    public void add(Process process) {
         jobsQueue.add(process);
     }
 
-    public void addProcessRandom(int time){
+    public void addProcessRandom(int time) {
         Timer timer = new Timer();
 
         TimerTask timerTask = new TimerTask() {
@@ -70,8 +72,9 @@ public class Scheduler {
 
     public void init() {
 
+        // Инициализируем тактовый генератор
         Timer timer = new Timer();
-        timer.schedule(tactGenerator, 1000, 1000);
+        timer.schedule(tactGenerator, Configuration.TG_PERIOD, Configuration.TG_PERIOD);
         tactGenerator.run();
 
         //jobsQueue.add(10);
@@ -105,7 +108,7 @@ public class Scheduler {
             for (int i = 0; i < readyQueue.getSize(); i++) {
                 var process = readyQueue.get(i);
 
-                if(process.getState() == State.Ready) {
+                if (process.getState() == State.Ready) {
                     for (Core core : cpu.getCores()) {
                         if (core.isIdle()) {
                             //var process = readyQueue.get(0);
@@ -118,7 +121,7 @@ public class Scheduler {
                         }
                     }
                 }
-                if(process.getState() != State.Running)
+                if (process.getState() != State.Running)
                     continue;
 
                 process.setBurstTime(TactGenerator.getTime() - process.getRunTime() - process.getIdleTime());
@@ -126,10 +129,6 @@ public class Scheduler {
                 if (process.getBurstTime() >= process.getTime()) {
 
                     process.setState(State.Terminated);
-                    //process.getCore().setIdle(true);
-                    //process.setCore(null);
-                    //process.releaseMemory();
-                    //readyQueue.remove(process);
                     System.out.println("////////////////////////////////////////////");
                     System.out.println(jobsQueue);
                     System.out.println("............................................");
@@ -142,21 +141,20 @@ public class Scheduler {
                 }
             }
 
-            for (int i = 0; i < readyQueue.getSize(); i++){
+            for (int i = 0; i < readyQueue.getSize(); i++) {
                 var process = readyQueue.get(i);
 
-                if(process.getState() == State.Waiting) {
+                if (process.getState() == State.Waiting) {
                     waitingQueue.add(process);
                     readyQueue.remove(process);
-                }
-                else if(process.getState() == State.Terminated)
+                } else if (process.getState() == State.Terminated)
                     readyQueue.remove(process);
             }
 
-            for (int i = 0; i < waitingQueue.getSize(); i++){
+            for (int i = 0; i < waitingQueue.getSize(); i++) {
                 var process = waitingQueue.get(i);
 
-                if(process.getState() == State.Running) {
+                if (process.getState() == State.Running) {
                     readyQueue.add(process);
                     waitingQueue.remove(process);
                 }
@@ -164,11 +162,10 @@ public class Scheduler {
 
             for (int i = 0; i < jobsQueue.getSize(); i++) {
                 var process = jobsQueue.get(i);
-                if(process.getState() == State.New)
-                {
+                if (process.getState() == State.New) {
                     //if(process.getMaxInitAttempts() > 0) {
-                        initProcess(process);
-                        readyQueue.sortByPriorityAndArrivalTime(State.Ready);
+                    initProcess(process);
+                    readyQueue.sortByPriorityAndArrivalTime(State.Ready);
                     //}
                     //else {
                     //    rejectedQueue.add(process);
@@ -176,21 +173,9 @@ public class Scheduler {
                     //}
                 }
             }
-            /*
-            boolean stopSchedule = true;
-            for (int i = 0; i < jobsQueue.getSize(); i++) {
-                var process = jobsQueue.get(i);
-                if (process.getState() != State.Terminated) {
-                    stopSchedule = false;
-                    break;
-                }
-            }
 
-            if (stopSchedule)
-                break;
-            */
             try {
-                Thread.sleep(500);
+                Thread.sleep(Configuration.TG_PERIOD / Configuration.TIMER_FREQ);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -201,20 +186,108 @@ public class Scheduler {
         return memoryScheduler;
     }
 
-    private void initProcess(Process process){
+    public int getMemoryUtil(){
+        int randomizer = Utils.getRandomInteger(10,100);
+        int usedMemory = readyQueue.getUsedMemory() + waitingQueue.getUsedMemory();
+        float memoryUtil = (float)(usedMemory + randomizer) / (memoryScheduler.getAvailableMemory() + usedMemory);
+        return (int)(memoryUtil * 100);
+    }
+
+    public int getCpuUtil(){
+        /*
+        float cpuUtil = 0;
+        for(int i = 0; i < readyQueue.getSize(); i++){
+            cpuUtil += readyQueue.get(i).getCpuUtil();
+        }
+
+        for(int i = 0; i < waitingQueue.getSize(); i++){
+            cpuUtil += waitingQueue.get(i).getCpuUtil();
+        }
+
+        int cpuCount = cpu.getCores().length;
+        int activeCpuCount = 0;
+        for(int i = 0; i < cpuCount; i++){
+            if(cpu.getCore(i).isIdle() == false)
+                activeCpuCount++;
+        }
+
+        float cpuCoeff = (float)activeCpuCount / cpuCount;
+
+        int queueSize = readyQueue.getSize() + waitingQueue.getSize();
+
+        if(queueSize != 0) {
+            cpuUtil = cpuUtil / (float)queueSize * cpuCoeff;
+        }
+
+        return (int)(cpuUtil * 100);
+        */
+
+        int busyTime = 0;
+        int idleTime = 0;
+
+        for(int i = 0; i < readyQueue.getSize(); i++){
+            busyTime += readyQueue.get(i).getBurstTime();
+            idleTime += readyQueue.get(i).getIdleTime();
+        }
+
+        for(int i = 0; i < waitingQueue.getSize(); i++){
+            busyTime += waitingQueue.get(i).getBurstTime();
+            idleTime += waitingQueue.get(i).getIdleTime();
+        }
+
+        float cpuUtil = 0;
+
+        if(busyTime + idleTime != 0){
+
+            int cpuCount = cpu.getCores().length;
+            int activeCpuCount = 0;
+            for(int i = 0; i < cpuCount; i++){
+                if(cpu.getCore(i).isIdle() == false)
+                    activeCpuCount++;
+            }
+
+            float cpuCoeff = (float)activeCpuCount / cpuCount;
+
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println("busyTime " + busyTime);
+            System.out.println("idleTime " + idleTime);
+            System.out.println("cpuCoeff " + cpuCoeff);
+
+
+
+            cpuUtil = (float)busyTime / (busyTime + idleTime);
+            cpuUtil *= cpuCoeff;
+
+            System.out.println("cpuUtl " + cpuUtil);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        }
+
+        return (int)(cpuUtil * 100);
+    }
+
+    private void initProcess(Process process) {
         var block = memoryScheduler.fillMemoryBLock(process.getMemory());
-        if(block != null){
+        if (block != null) {
             process.setState(State.Ready);
             process.setMemoryBlock(block);
             process.setDevice(device);
             readyQueue.add(process);
-        }
-        else {
+        } else {
             //process.setMaxInitAttempts();
             rejectedQueue.add(process);
             jobsQueue.remove(process);
         }
     }
+
+    /*
+        public int countRejected(){
+            int counter = 0;
+            for(int i = 0; i < rejectedQueue.getSize(); i++){
+                counter++;
+            }
+            return counter;
+        }
+    */
 
     public Queue getJobsQueue() {
         return jobsQueue;
@@ -260,9 +333,9 @@ public class Scheduler {
     public String toString() {
         return "Scheduler {" + "\n" +
                 "jobs queue: [ " + "\n" + jobsQueue + " ]" + " \n" +
-                "rejected queue: [" +  "\n" +rejectedQueue + " ]" + " \n" +
-                "CPU:"  + cpu + "\n" +
-                "memoryScheduler: "  + memoryScheduler +
+                "rejected queue: [" + "\n" + rejectedQueue + " ]" + " \n" +
+                "CPU:" + cpu + "\n" +
+                "memoryScheduler: " + memoryScheduler +
                 '}';
     }
 }

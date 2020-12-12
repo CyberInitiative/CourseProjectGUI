@@ -33,6 +33,7 @@ public class Process{
         this.name = "PID" + this.id;
         this.state = State.New;
     }
+    /*
     public Process(int id, String name, int priority, int time, int memory) {
         this.id = id;
         this.name = "P" + this.id;
@@ -54,6 +55,7 @@ public class Process{
         this.burstTime = 0;
         this.state = State.New;
     }
+ */
 
     public int getId() {
         return id;
@@ -176,8 +178,13 @@ public class Process{
     public int getResourceId() {
         return resourceId;
     }
-
-    private void startTimer(){
+    /*
+    public float getCpuUtil()
+    {
+        return burstTime + idleTime != 0 ? (float)burstTime / (burstTime + idleTime) : 0;
+    }
+    */
+    private void startTimer2(){
         int requestDeviceTime = Utils.getRandomInteger(0,time / 2);
         var me = this;
 
@@ -205,27 +212,66 @@ public class Process{
                 */
 
                 if(burstTime >= requestDeviceTime && state == State.Running){
-                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                    System.out.println(device);
-                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                     state = State.Waiting;
                     startWaitTime = TactGenerator.getTime();
                     int resourceNumber = device.requestResource();
                     if(resourceNumber != -1){
                         device.doWork(resourceNumber);
-                        idleTime += (TactGenerator.getTime() - startWaitTime);
+                        idleTime = TactGenerator.getTime() - startWaitTime;
                         state = State.Running;
                         stopTimer();
                     }
                     else
                         System.out.println(new Date() + " Process " + me.name + " is waiting for resource");
                 }
+                else if(state == State.Waiting)
+                {
+                    idleTime = TactGenerator.getTime() - startWaitTime;
+                }
 
             }
         };
-
-        timer.schedule(repeatedTask, 500, 500);
+        int timerPeriod = Configuration.TG_PERIOD / Configuration.TIMER_FREQ;
+        timer.schedule(repeatedTask, timerPeriod, timerPeriod);
     }
+
+    private void startTimer(){
+        int requestDeviceTime = Utils.getRandomInteger(0,time / 2);
+        var me = this;
+
+        TimerTask repeatedTask = new TimerTask() {
+            int startWaitTime = 0;
+
+            public void run() {
+
+                if(burstTime >= requestDeviceTime && state == State.Running){
+                    state = State.Waiting;
+                    startWaitTime = TactGenerator.getTime();
+                    int resourceNumber = device.requestResource();
+                    if(resourceNumber != -1){
+
+                        Thread workerThread = new Thread(() -> {
+                            device.doWork(resourceNumber);
+                            state = State.Running;
+                            stopTimer();
+                        });
+                        workerThread.start();
+
+                    }
+                    else
+                        System.out.println(new Date() + " Process " + me.name + " is waiting for resource");
+                }
+                else if(state == State.Waiting)
+                {
+                    idleTime = TactGenerator.getTime() - startWaitTime;
+                }
+
+            }
+        };
+        int timerPeriod = Configuration.TG_PERIOD / Configuration.TIMER_FREQ;
+        timer.schedule(repeatedTask, timerPeriod, timerPeriod);
+    }
+
     private void stopTimer(){
         timer.cancel();
     }

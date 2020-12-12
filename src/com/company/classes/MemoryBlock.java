@@ -11,17 +11,17 @@ public class MemoryBlock {
         this.availableMemory = availableMemory;
     }
 
-    @Override
-    public String toString() {
-        return "{" + availableMemory + '}';
-    }
-
     public int getAvailableMemory() {
         return availableMemory;
     }
 
     public void setAvailableMemory(int availableMemory) {
         this.availableMemory = availableMemory;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + availableMemory + '}';
     }
     /*
     int start;
